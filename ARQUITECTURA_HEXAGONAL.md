@@ -93,18 +93,56 @@ src/main/java/com/skillnest/firstspring/
 
 ## Proceso de Migración Paso a Paso
 
-### Paso 1: Crear la estructura de directorios
-### Paso 2: Definir el modelo de dominio
-### Paso 3: Crear los puertos (interfaces)
-### Paso 4: Implementar los servicios de dominio
-### Paso 5: Crear los servicios de aplicación
-### Paso 6: Implementar los adaptadores de persistencia
-### Paso 7: Implementar los adaptadores web
-### Paso 8: Configurar la inyección de dependencias
-### Paso 9: Migrar las pruebas
-### Paso 10: Verificar y refactorizar
+### ✅ Paso 1: Crear la estructura de directorios
+Se crearon las carpetas siguiendo el patrón hexagonal:
+- `domain/model/` - Entidades de dominio
+- `domain/port/in/` - Puertos de entrada (casos de uso)
+- `domain/port/out/` - Puertos de salida (repositorios)
+- `domain/service/` - Servicios de dominio
+- `application/service/` - Servicios de aplicación
+- `application/dto/` - DTOs para transferencia
+- `infrastructure/adapter/in/web/` - Controladores REST
+- `infrastructure/adapter/out/persistence/` - Adaptadores de persistencia
+- `infrastructure/configuration/` - Configuración de Spring
 
-*[Los pasos detallados se implementarán a continuación]*
+### ✅ Paso 2: Definir el modelo de dominio
+Creado `User.java` en el dominio sin dependencias externas:
+- Sin anotaciones JPA
+- Con lógica de negocio pura (`isValid()`, `isOfAge()`, `getFullName()`)
+- Usar `LocalDate` en lugar de `Date`
+
+### ✅ Paso 3: Crear los puertos (interfaces)
+- **UserUseCase**: Define QUÉ se puede hacer (casos de uso)
+- **UserRepositoryPort**: Define QUÉ operaciones de persistencia se necesitan
+
+### ✅ Paso 4: Implementar los servicios de dominio
+**UserDomainService**: 
+- Implementa `UserUseCase`
+- Contiene lógica de negocio pura
+- Valida reglas de negocio (email único, datos válidos)
+- No depende de frameworks externos
+
+### ✅ Paso 5: Crear los servicios de aplicación
+- **UserDto**: Para transferencia de datos
+- **UserApplicationService**: Orquesta casos de uso y convierte entre DTOs y entidades de dominio
+
+### ✅ Paso 6: Implementar los adaptadores de persistencia
+- **UserEntity**: Entidad JPA con anotaciones específicas
+- **UserJpaRepository**: Interface JPA Repository
+- **UserPersistenceAdapter**: Implementa `UserRepositoryPort`, convierte entre entidades de dominio y JPA
+
+### ✅ Paso 7: Implementar los adaptadores web
+- **UserController**: Controlador REST hexagonal que usa `UserApplicationService`
+- **FirstController**: Controlador básico migrado para mantener compatibilidad
+
+### ✅ Paso 8: Configurar la inyección de dependencias
+**BeanConfiguration**: Configura beans para inyección de dependencias respetando las capas hexagonales
+
+### ✅ Paso 9: Migrar el manejo de excepciones
+**GlobalExceptionHandler**: Movido a la capa de infraestructura como adaptador
+
+### ✅ Paso 10: Verificar y refactorizar
+✅ **Compilación exitosa** - La nueva arquitectura hexagonal compila correctamente
 
 ## Estructura Final
 
